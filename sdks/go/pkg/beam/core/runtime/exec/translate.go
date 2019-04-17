@@ -39,6 +39,7 @@ import (
 const (
 	urnDataSource           = "urn:org.apache.beam:source:runner:0.1"
 	urnDataSink             = "urn:org.apache.beam:sink:runner:0.1"
+	urnGroupedCombine       = "beam:transform:combine_grouped_values:v1"
 	urnPerKeyCombinePre     = "beam:transform:combine_per_key_precombine:v1"
 	urnPerKeyCombineMerge   = "beam:transform:combine_per_key_merge_accumulators:v1"
 	urnPerKeyCombineExtract = "beam:transform:combine_per_key_extract_outputs:v1"
@@ -336,7 +337,7 @@ func (b *builder) makeLink(from string, id linkID) (Node, error) {
 
 	var u Node
 	switch urn {
-	case graphx.URNParDo, graphx.URNJavaDoFn, urnPerKeyCombinePre, urnPerKeyCombineMerge, urnPerKeyCombineExtract:
+	case graphx.URNParDo, graphx.URNJavaDoFn, urnPerKeyCombinePre, urnPerKeyCombineMerge, urnPerKeyCombineExtract, urnGroupedCombine:
 		var data string
 		switch urn {
 		case graphx.URNParDo:
@@ -345,7 +346,7 @@ func (b *builder) makeLink(from string, id linkID) (Node, error) {
 				return nil, fmt.Errorf("invalid ParDo payload for %v: %v", transform, err)
 			}
 			data = string(pardo.GetDoFn().GetSpec().GetPayload())
-		case urnPerKeyCombinePre, urnPerKeyCombineMerge, urnPerKeyCombineExtract:
+		case urnPerKeyCombinePre, urnPerKeyCombineMerge, urnPerKeyCombineExtract, urnGroupedCombine:
 			var cmb pb.CombinePayload
 			if err := proto.Unmarshal(payload, &cmb); err != nil {
 				return nil, fmt.Errorf("invalid CombinePayload payload for %v: %v", transform, err)
